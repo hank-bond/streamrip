@@ -52,18 +52,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cron \
     && rm -rf /var/lib/apt/lists/*
 
-# Layer 2: Python dependencies only (rebuilds when pyproject.toml changes)
-# Copy only dependency declaration, not the entire codebase
-COPY pyproject.toml /app/
+# Layer 2: Python dependencies only (rebuilds when pyproject.toml/uv.lock changes)
+# Copy only dependency declarations, not the entire codebase
+COPY pyproject.toml uv.lock /app/
 RUN ln -s /usr/bin/python3 /usr/bin/python && \
+    pip3 install --no-cache-dir uv && \
     cd /app && \
-    pip3 install --no-cache-dir poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --only main --no-root && \
-    pip3 uninstall -y poetry
+    uv export --locked --no-dev --no-emit-project --no-hashes -o requirements.txt && \
+    uv pip install --system --no-cache -r requirements.txt
 
 # Layer 3: Install Camoufox packages and download browserforge data (browser/GeoIP downloaded at runtime)
-RUN pip3 install --no-cache-dir camoufox "camoufox[geoip]" && \
+RUN pip3 install --no-cache-dir "camoufox[geoip]==0.4.11" "playwright==1.59.0" && \
     python3 -m browserforge update && \
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/browserforge 2>/dev/null || true && \
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/camoufox 2>/dev/null || true && \
@@ -74,7 +73,7 @@ RUN pip3 install --no-cache-dir camoufox "camoufox[geoip]" && \
 # Layer 4: Streamrip code (changes frequently, rebuilds quickly)
 COPY . /app/
 RUN cd /app && \
-    pip3 install --no-cache-dir . && \
+    uv pip install --system --no-cache --no-deps . && \
     # Ensure browserforge/camoufox files are readable+writable after streamrip install (for GeoIP download)
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/browserforge 2>/dev/null || true && \
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/camoufox 2>/dev/null || true && \

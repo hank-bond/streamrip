@@ -131,6 +131,16 @@ from the `dev` branch with the following command
 pip3 install git+https://github.com/nathom/streamrip.git@dev
 ```
 
+## Local Development
+
+This repo uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
+```bash
+uv sync
+uv run rip --help
+uv run pytest
+```
+
 ## Example Usage
 
 **For Tidal and Qobuz, you NEED a premium subscription.**
