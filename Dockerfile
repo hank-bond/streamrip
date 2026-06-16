@@ -62,7 +62,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python && \
     uv pip install --system --no-cache -r requirements.txt
 
 # Layer 3: Install Camoufox packages and download browserforge data (browser/GeoIP downloaded at runtime)
-RUN pip3 install --no-cache-dir camoufox "camoufox[geoip]" && \
+RUN pip3 install --no-cache-dir "camoufox[geoip]==0.4.11" "playwright==1.59.0" && \
     python3 -m browserforge update && \
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/browserforge 2>/dev/null || true && \
     chmod -R a+rwX /usr/local/lib/python3.*/dist-packages/camoufox 2>/dev/null || true && \
