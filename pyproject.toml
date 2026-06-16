@@ -31,7 +31,7 @@ dependencies = [
   "aiolimiter>=1.1.0,<2.0.0",
   "rich>=13.6.0,<14.0.0",
   "click-help-colors>=0.9.2,<0.10.0",
-  "rym-metadata @ git+https://github.com/omnunum/rym_metadata.git@v1.4.4",
+  "rym-metadata @ git+https://github.com/hank-bond/rym_metadata.git@2ffddc791a86ea2298dc319ccac3c4c2e300d27a",
 ]
 
 [project.optional-dependencies]
